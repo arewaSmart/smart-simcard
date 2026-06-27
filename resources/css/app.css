@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* Premium custom scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(241, 245, 249, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(66, 81, 124, 0.2);
+        border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(66, 81, 124, 0.4);
+    }
+
+    /* Core branding variables */
+    :root {
+        --color-brand-primary: #42517c;
+        --color-brand-secondary: #55699e;
+        --color-bg-glow-purple: rgba(139, 92, 246, 0.25);
+        --color-bg-glow-emerald: rgba(16, 185, 129, 0.25);
+        --color-bg-glow-rose: rgba(244, 63, 94, 0.25);
+        --color-bg-glow-sky: rgba(14, 165, 233, 0.25);
+    }
+}
+
+@layer utilities {
+    /* Custom premium card glows */
+    .glow-purple {
+        box-shadow: 0 10px 25px -5px var(--color-bg-glow-purple), 0 8px 10px -6px var(--color-bg-glow-purple);
+    }
+    .glow-emerald {
+        box-shadow: 0 10px 25px -5px var(--color-bg-glow-emerald), 0 8px 10px -6px var(--color-bg-glow-emerald);
+    }
+    .glow-rose {
+        box-shadow: 0 10px 25px -5px var(--color-bg-glow-rose), 0 8px 10px -6px var(--color-bg-glow-rose);
+    }
+    .glow-sky {
+        box-shadow: 0 10px 25px -5px var(--color-bg-glow-sky), 0 8px 10px -6px var(--color-bg-glow-sky);
+    }
+
+    /* Subtle background card pattern */
+    .bg-grid-pattern {
+        background-size: 20px 20px;
+        background-image: 
+            linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    }
+
+    /* Animated background gradients for high-end feel */
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .animate-gradient-shift {
+        background-size: 200% 200%;
+        animation: gradient-shift 6s ease infinite;
+    }
+}

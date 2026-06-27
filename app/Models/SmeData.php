@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class SmeData extends Model
+{
+    use HasFactory;
+
+    protected $table = 'sme_data';
+
+    protected $fillable = [
+        'data_id',
+        'network',
+        'plan_type',
+        'personal_price',
+        'agent_price',
+        'partner_price',
+        'business_price',
+        'size',
+        'validity',
+        'status',
+    ];
+
+    protected $casts = [
+        'personal_price' => 'decimal:2',
+        'agent_price' => 'decimal:2',
+        'partner_price' => 'decimal:2',
+        'business_price' => 'decimal:2',
+    ];
+
+    /**
+     * Calculate price based on the user role/upgrade tier
+     *
+     * @param string $role
+     * @return float
+     */
+    public function calculatePriceForRole(string $role): float
+    {
+        return match ($role) {
+            'agent' => (float) $this->agent_price,
+            'partner' => (float) $this->partner_price,
+            'business' => (float) $this->business_price,
+            'staff', 'checker', 'super_admin' => (float) $this->business_price,
+            default => (float) $this->personal_price,
+        };
+    }
+}

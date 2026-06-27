@@ -1,0 +1,161 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
+
+class ProfileController extends Controller
+{
+    /**
+     * Display the user's profile form.
+     */
+    public function edit(Request $request): View
+    {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Update the user's profile information.
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->fill($request->safe()->except(['profile_photo']));
+
+        if ($request->hasFile('profile_photo')) {
+            $file = $request->file('profile_photo');
+            $filename = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
+            $destinationPath = public_path('uploads/profile_photos');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            $file->move($destinationPath, $filename);
+
+            // Delete old photo if it exists
+            if ($user->profile_photo) {
+                $oldPath = public_path($user->profile_photo);
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
+            $user->profile_photo = 'uploads/profile_photos/' . $filename;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'profile-updated')
+            ->with('success', 'Profile information updated successfully.');
+    }
+
+    /**
+     * Set or update user's transaction PIN.
+     */
+    public function updatePin(Request $request): RedirectResponse
+    {
+        // Step 1: Validate fields are present and PIN format is correct
+        $request->validateWithBag('updatePin', [
+            'password'        => ['required', 'string'],
+            'transaction_pin' => ['required', 'string', 'digits:5', 'confirmed'],
+        ], [
+            'transaction_pin.digits'    => 'Transaction PIN must be exactly 5 digits.',
+            'transaction_pin.confirmed' => 'The two PIN entries do not match.',
+        ]);
+
+        // Step 2: Manually verify password — fetch fresh from DB to avoid cached/hidden model issues
+        $user = \App\Models\User::find(Auth::id());
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->getAuthPassword())) {
+            return Redirect::route('profile.edit')
+                ->withErrors(['password' => 'The password you entered is incorrect.'], 'updatePin')
+                ->withInput();
+        }
+
+        // Step 3: Save the new PIN (auto-hashed via User model cast)
+        $user->transaction_pin = $request->transaction_pin;
+        $user->pin_set_at      = now();
+        $user->save();
+
+        // Audit log: record PIN change with IP and device info
+        Log::info('Transaction PIN updated', [
+            'user_id' => $user->id,
+            'ip'      => $request->ip(),
+            'ua'      => $request->userAgent(),
+            'at'      => now()->toDateTimeString(),
+        ]);
+
+        return Redirect::route('profile.edit')->with('success', 'Transaction PIN updated successfully. You can now use it to authorise purchases.');
+    }
+
+    /**
+     * Handle business, partner, or agent account upgrade requests.
+     */
+    public function requestUpgrade(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        // Prevent multiple upgrade request submissions
+        if ($user->upgrade_status === 'pending' || $user->upgrade_status === 'approved' || in_array($user->role, ['agent', 'partner', 'business'])) {
+            return Redirect::route('profile.edit')->with('error', 'You already have a pending or approved upgrade request and cannot submit another one.');
+        }
+
+        $request->validate([
+            'role' => ['required', 'string', 'in:agent,partner,business'],
+            'gender' => ['required', 'string', 'in:male,female,other'],
+            'business_name' => ['required', 'string', 'max:255'],
+            'business_type' => ['required', 'string', 'in:sole_proprietor,llc,partnership'],
+            'cac_number' => ['required', 'string', 'max:50'],
+        ]);
+
+        // Explicit security check to prevent role injection attacks
+        $allowedRoles = ['agent', 'partner', 'business'];
+        if (!in_array($request->role, $allowedRoles)) {
+            abort(403, 'Invalid or unauthorized role request.');
+        }
+
+        $user->forceFill([
+            'gender' => $request->gender,
+            'pending_role' => $request->role,
+            'upgrade_status' => 'pending',
+            'upgrade_requested_at' => now(),
+            'business_name' => $request->business_name,
+            'business_type' => $request->business_type,
+            'cac_number' => $request->cac_number,
+        ])->save();
+
+        return Redirect::route('profile.edit')->with('success', 'Your account upgrade request to ' . ucfirst($request->role) . ' has been submitted successfully and is currently pending admin review.');
+    }
+
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        // Update status to inactive to preserve user information
+        $user->forceFill([
+            'status' => 'inactive',
+        ])->save();
+
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to('/');
+    }
+}

@@ -1,0 +1,177 @@
+<x-guest-layout>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-900 font-display">Create an Account</h1>
+        <p class="text-sm text-slate-500 mt-1">Sign up to access smart connectivity services.</p>
+    </div>
+
+    <form method="POST" action="{{ route('register') }}" class="space-y-5">
+        @csrf
+
+        <!-- Email Address -->
+        <div>
+            <label for="email" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Email Address</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                </div>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
+                    class="block w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#42517c] focus:ring-2 focus:ring-[#42517c]/20 transition-all duration-200 text-sm shadow-sm"
+                    placeholder="name@example.com" />
+            </div>
+            <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label for="password" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Password</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                </div>
+                <input id="password" type="password" name="password" required autocomplete="new-password"
+                    class="block w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#42517c] focus:ring-2 focus:ring-[#42517c]/20 transition-all duration-200 text-sm shadow-sm"
+                    placeholder="••••••••" />
+                <button type="button" onclick="togglePasswordVisibility('password', 'password-toggle-icon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition">
+                    <i data-lucide="eye" id="password-toggle-icon" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <!-- Password Strength Progress -->
+            <div class="mt-2">
+                <div class="flex justify-between items-center mb-1">
+                    <span id="strength-text" class="text-xs font-semibold"></span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="strength-bar" class="h-full bg-red-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+            <label for="password_confirmation" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Confirm Password</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                </div>
+                <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
+                    class="block w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#42517c] focus:ring-2 focus:ring-[#42517c]/20 transition-all duration-200 text-sm shadow-sm"
+                    placeholder="••••••••" />
+                <button type="button" onclick="togglePasswordVisibility('password_confirmation', 'confirm-password-toggle-icon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition">
+                    <i data-lucide="eye" id="confirm-password-toggle-icon" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1.5" />
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="flex items-start">
+            <input type="checkbox" name="terms" id="terms" value="1"
+                class="rounded border-slate-300 text-[#42517c] focus:ring-[#42517c]/20 focus:ring-offset-0 focus:outline-none w-4 h-4 cursor-pointer transition-all mt-1 flex-shrink-0"
+                {{ old('terms') ? 'checked' : '' }}>
+            <label for="terms" class="ms-2 text-sm text-slate-500 select-none cursor-pointer">
+                I agree to the
+                <a href="#" class="font-semibold text-[#42517c] hover:text-[#55699e] transition text-decoration-none font-display">Terms &amp; Conditions</a>
+                and
+                <a href="#" class="font-semibold text-[#42517c] hover:text-[#55699e] transition text-decoration-none font-display">Privacy Policy</a>
+            </label>
+        </div>
+        <x-input-error :messages="$errors->get('terms')" class="mt-1.5" />
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+            <button type="submit" class="w-full flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#42517c] to-[#55699e] hover:from-[#354268] hover:to-[#42517c] text-white font-semibold text-sm rounded-xl shadow-lg shadow-indigo-950/10 hover:shadow-indigo-950/20 active:scale-[0.98] transition-all duration-200 font-display">
+                <span>{{ __('Register') }}</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center text-sm text-slate-500 pt-4 border-t border-slate-100 font-display">
+            Already registered? 
+            <a href="{{ route('login') }}" class="font-semibold text-[#42517c] hover:text-[#55699e] transition">
+                Log In
+            </a>
+        </div>
+    </form>
+
+    <script>
+        function togglePasswordVisibility(fieldId, iconId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleIcon = document.getElementById(iconId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        // Live Password strength checker
+        const passwordInput = document.getElementById('password');
+        const strengthText = document.getElementById('strength-text');
+        const strengthBar = document.getElementById('strength-bar');
+
+        passwordInput.addEventListener('input', function () {
+            const value = this.value;
+
+            // --- Empty: hide the indicator entirely ---
+            if (value.length === 0) {
+                strengthBar.style.width = '0%';
+                strengthBar.className = 'h-full transition-all duration-300';
+                strengthText.textContent = '';
+                strengthText.className = 'text-xs font-semibold';
+                return;
+            }
+
+            // --- Under 8 characters: always "Too short" ---
+            if (value.length < 8) {
+                const partial = (value.length / 8) * 20; // tiny partial fill up to 20%
+                strengthBar.style.width = partial + '%';
+                strengthBar.className = 'h-full bg-red-500 transition-all duration-300';
+                strengthText.textContent = 'Too short — minimum 8 characters';
+                strengthText.className = 'text-xs font-semibold text-red-500';
+                return;
+            }
+
+            // --- 8+ characters: score on complexity ---
+            let score = 1; // length >= 8 already guaranteed, start at 1
+            if (/[A-Z]/.test(value)) score++;
+            if (/[a-z]/.test(value)) score++;
+            if (/[0-9]/.test(value)) score++;
+            if (/[^A-Za-z0-9]/.test(value)) score++;
+
+            let width    = (score / 5) * 100;
+            let barClass = 'bg-red-500';
+            let label    = 'Weak';
+            let textClass = 'text-red-500';
+
+            if (score === 2) {
+                barClass  = 'bg-amber-500';
+                label     = 'Fair';
+                textClass = 'text-amber-500';
+            } else if (score === 3) {
+                barClass  = 'bg-cyan-500';
+                label     = 'Good';
+                textClass = 'text-cyan-500';
+            } else if (score === 4) {
+                barClass  = 'bg-blue-500';
+                label     = 'Strong';
+                textClass = 'text-blue-500';
+            } else if (score === 5) {
+                barClass  = 'bg-green-500';
+                label     = 'Very Strong ✓';
+                textClass = 'text-green-500';
+            }
+
+            strengthBar.style.width = width + '%';
+            strengthBar.className = 'h-full transition-all duration-300 ' + barClass;
+            strengthText.textContent = label;
+            strengthText.className = 'text-xs font-semibold ' + textClass;
+        });
+    </script>
+</x-guest-layout>
