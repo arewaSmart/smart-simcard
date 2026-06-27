@@ -16,9 +16,8 @@ return new class extends Migration
             // Target a specific user OR a role group (not both required)
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->enum('user_type', ['personal', 'agent', 'partner', 'business', 'staff', 'checker', 'super_admin'])->nullable();
-            $table->decimal('commission', 10, 2)->default(0.00)->after('price');
-
             $table->decimal('price', 10, 2);
+            $table->decimal('commission', 10, 2)->default(0.00);
             $table->timestamps();
 
             // Prevent duplicate price entries per user + service + field combination
