@@ -232,16 +232,16 @@
                         <!-- Tab Content Panes -->
                         <div class="tab-panes-container">
                             <div class="tab-pane" id="tab-mtn">
-                                @include('Utilities.partials.pricing-table-content', ['plans' => $mtnPlans])
+                                @include('utilities.partials.pricing-table-content', ['plans' => $mtnPlans])
                             </div>
                             <div class="tab-pane hidden" id="tab-glo">
-                                @include('Utilities.partials.pricing-table-content', ['plans' => $gloPlans])
+                                @include('utilities.partials.pricing-table-content', ['plans' => $gloPlans])
                             </div>
                             <div class="tab-pane hidden" id="tab-airtel">
-                                @include('Utilities.partials.pricing-table-content', ['plans' => $airtelPlans])
+                                @include('utilities.partials.pricing-table-content', ['plans' => $airtelPlans])
                             </div>
                             <div class="tab-pane hidden" id="tab-mobile9">
-                                @include('Utilities.partials.pricing-table-content', ['plans' => $mobile9Plans])
+                                @include('utilities.partials.pricing-table-content', ['plans' => $mobile9Plans])
                             </div>
                         </div>
                     </div>

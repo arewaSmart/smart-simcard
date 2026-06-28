@@ -51,7 +51,7 @@ class SmeDataController extends Controller
         $airtelPlans = SmeData::where('network', 'AIRTEL')->where('status', 'enabled')->get();
         $mobile9Plans = SmeData::where('network', '9MOBILE')->where('status', 'enabled')->get();
 
-        return view('Utilities.buy-sme-data', compact(
+        return view('utilities.buy-sme-data', compact(
             'user', 
             'wallet', 
             'networks',

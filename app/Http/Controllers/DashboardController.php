@@ -169,7 +169,7 @@ class DashboardController extends Controller
             'admins'   => User::whereIn('role', ['super_admin', 'staff', 'checker'])->count(),
         ];
 
-        return view('Admin.admin_dashboard', compact(
+        return view('admin.admin_dashboard', compact(
             'totalUsers',
             'activeUsers',
             'totalWalletBalance',

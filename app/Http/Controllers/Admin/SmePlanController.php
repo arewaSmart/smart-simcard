@@ -48,7 +48,7 @@ class SmePlanController extends Controller
         $activePlansCount = SmeData::where('status', 'enabled')->count();
         $disabledPlansCount = SmeData::where('status', 'disabled')->count();
 
-        return view('Admin.sme-plans.index', compact(
+        return view('admin.sme-plans.index', compact(
             'plans',
             'totalPlansCount',
             'activePlansCount',

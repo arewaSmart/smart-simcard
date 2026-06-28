@@ -65,7 +65,7 @@ class SimPlanController extends Controller
         $totalAvailable = Sim::where('status', 'available')->count();
         $totalActivated = Sim::where('status', 'active')->count();
 
-        return view('Admin.sim-plan.index', compact(
+        return view('admin.sim-plan.index', compact(
             'sims', 'pendingRequests', 'resolvedRequests', 'assignableUsers', 'categories', 'providers',
             'totalUploaded', 'totalAssigned', 'totalAvailable', 'totalActivated'
         ));
