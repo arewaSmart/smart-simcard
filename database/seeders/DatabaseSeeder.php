@@ -24,6 +24,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             SimSeeder::class,
+            SmeDataSeeder::class,
+            AirtimeSeeder::class,
+            P2PSeeder::class,
         ]);
     }
 }
